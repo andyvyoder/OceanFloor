@@ -47,3 +47,5 @@ A couple of files are untouched from the original Apple samples and those files 
     - Other ideas for this were to wait for a floor _plane_ detection and then pass the plane’s Y value to the geometry modifier to force the mesh to be flat.
 - The wave should look nicer. Right now it’s just a flat color. Texturing the wave would need to deal with making sure seams didn’t appear between meshes. If I have more time I would see look into applying some post processing to the wave to make it look better.
 - My approach to having a specific object occlude the wave did not pan out. I attempted to recognize a jar of pickle using ARKit’s Object Detection, but I didn’t find its positioning to be accurate enough to position a tight fitting occlusion model (in my case a cylinder because it was a jar).
+- WaveSystem could have simply been a class an not a system. Having it be a system lead to unsightly things like making a static instance reference for OceanView and WaveSystem.
+- The way settings are accessed is not ideal. WaveSystem needs to access the settings, and it currently does this by getting it from OceanView. But WaveSystem shouldn't know about OceanView at all.
