@@ -14,7 +14,9 @@ extension ARMeshGeometry {
     
     // This will go through the geometry and look every face. If the face is classified according
     // to the callers request it will be added to the returned MeshDescriptor.
-    func createExtractedMeshDescriptor(for classification: ARMeshClassification) -> MeshDescriptor {
+    func createExtractedMeshDescriptor(for classification: ARMeshClassification, 
+                                       referenceNormal: SIMD3<Float> = .init(0.0, 1.0, 0.0), // Up
+                                       normalToleranceAngleDegrees: Float = 10.0) -> MeshDescriptor {
         var desc = MeshDescriptor()
         
         
@@ -32,64 +34,46 @@ extension ARMeshGeometry {
         let normalValues = normals.asSIMD3(ofType: Float.self)
         desc.normals = .init(normalValues)
         
-        /******************************************
-         Ran out of time trying to get this working at the end.
-         The idea here was to average the normals for each face and only include faces where that normal
-         is mostly pointing up.
-         
-        let Up : SIMD3<Float> = .init(0.0, 1.0, 0.0)
-        let toleranceAngleDegrees = 10.0
-        let cosineOfToleranceAngle: Float  = Float(cos(toleranceAngleDegrees * .pi / 180.0))
         
-        var matchingFaces: [UInt32] = [] // holds the faces buffer that only contains faces that match our classification and orientation
+        let toleranceAngleRadians = normalToleranceAngleDegrees * .pi / 180.0
+        let cosineOfToleranceAngle: Float  = Float(cos(toleranceAngleRadians))
+        
+        var matchingFacesVertIndices: [UInt32] = [] // holds the faces buffer that only contains faces that match our classification and orientation
         for faceIndex in 0..<faces.count {
-            if classificationOf(faceWithIndex: faceIndex) == classification {
-                let indices = (0..<faces.indexCountPerPrimitive).map {
-                    faces.buffer.contents()
-                        .advanced(by: (faceIndex * faces.indexCountPerPrimitive + $0) * faces.bytesPerIndex)
-                        .assumingMemoryBound(to: UInt32.self).pointee
-                }
-                let normals = indices.map { normalValues[Int($0)] }
-                let averagedNormal = normals.reduce(SIMD3<Float>(0,0,0), +) / Float(normals.count)
-                let normalizedAveragedNormal = normalize(averagedNormal)
-                
-                if dot(normalValues[faceIndex], Up) > cosineOfToleranceAngle {
-                    // This face matches the requested classification
-                    // and it is within the tolerance of the desired normal (Up)
-                    
-                    // $$$$ Note (avy): use a mapping function to do this instead of having this similar code.
-                    let v1Index = faces.buffer.contents()
-                        .advanced(by: (faceIndex * faces.bytesPerIndex * faces.indexCountPerPrimitive) )
-                        .assumingMemoryBound(to: UInt32.self).pointee
-                    
-                    let v2Index = faces.buffer.contents()
-                        .advanced(by: (faceIndex * faces.bytesPerIndex * faces.indexCountPerPrimitive) + (faces.bytesPerIndex) )
-                        .assumingMemoryBound(to: UInt32.self).pointee
-                    
-                    let v3Index = faces.buffer.contents()
-                        .advanced(by: (faceIndex * faces.bytesPerIndex * faces.indexCountPerPrimitive) + (2*faces.bytesPerIndex))
-                        .assumingMemoryBound(to: UInt32.self).pointee
-                    
-                    matchingFaces.append(v1Index)
-                    matchingFaces.append(v2Index)
-                    matchingFaces.append(v3Index)
-                }
+            if classificationOf(faceWithIndex: faceIndex) != classification {
+                // ignore this face, it's not the classification we're looking for
+                continue
             }
+            
+            let faceVertNormalIndices : [UInt32] = (0..<faces.indexCountPerPrimitive).map {
+                // Get the normal index for face# faceIndex's vertex# $0
+                faces.buffer.contents()
+                    .advanced(by: (faceIndex * faces.indexCountPerPrimitive + $0) * faces.bytesPerIndex)
+                    .assumingMemoryBound(to: UInt32.self).pointee
+            }
+            
+            let normalizedAveragedFaceNormal: SIMD3<Float> = {
+                let faceNormals: [SIMD3<Float>] = faceVertNormalIndices.map { normalValues[Int($0)] }
+                let averagedFaceNormal = faceNormals.reduce(SIMD3<Float>(0,0,0), +) / Float(normals.count)
+                return normalize(averagedFaceNormal)
+            }()
+            
+            if dot(normalizedAveragedFaceNormal, referenceNormal) < cosineOfToleranceAngle {
+                // This face isn't oriented close enough to the reference direction,
+                // reject it even though it matched the required classification
+                continue
+            }
+        
+            // This face matches the requested classification
+            // and it is within the tolerance of the desired orientation
+            
+            matchingFacesVertIndices += faceVertNormalIndices
         }
-         */
 
         do {
             // Was using .polygons here, but everything seems to always be tris, so using .triangles here then the face vert count array is unneeded.
             desc.primitives = .triangles(
-                // filter only those faces that are classified as requested by the caller, ignore all other faces.
-                (0..<faces.count * faces.indexCountPerPrimitive).filter({
-                    let faceIndex = Int($0/faces.indexCountPerPrimitive)
-                    return classificationOf(faceWithIndex: faceIndex) == classification
-                }).map {
-                    faces.buffer.contents()
-                        .advanced(by: $0 * faces.bytesPerIndex)
-                        .assumingMemoryBound(to: UInt32.self).pointee
-                }
+                matchingFacesVertIndices
             )
         }
         
