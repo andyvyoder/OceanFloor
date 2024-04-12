@@ -23,6 +23,7 @@
 		D811148F2BC2E0D0000049B2 /* Color-Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D811148E2BC2E0D0000049B2 /* Color-Extentions.swift */; };
 		D81114912BC2E10B000049B2 /* ARMeshGeometry-Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81114902BC2E10B000049B2 /* ARMeshGeometry-Extentions.swift */; };
 		D81114932BC2E49B000049B2 /* WaveSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81114922BC2E49B000049B2 /* WaveSettingsView.swift */; };
+		D8B4E4342BC9AAEF006D72DA /* cell_noise_1.png in Resources */ = {isa = PBXBuildFile; fileRef = D8B4E4332BC9AAEF006D72DA /* cell_noise_1.png */; };
 		D8CAF17B2BC076F100D8A233 /* WaveSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CAF17A2BC076F100D8A233 /* WaveSystem.swift */; };
 		D8CAF17D2BC0775E00D8A233 /* WaveComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CAF17C2BC0775E00D8A233 /* WaveComponent.swift */; };
 		D8CAF17F2BC1AB0400D8A233 /* ARGeometry-Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CAF17E2BC1AB0400D8A233 /* ARGeometry-Extentions.swift */; };
@@ -48,6 +49,7 @@
 		D811148E2BC2E0D0000049B2 /* Color-Extentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color-Extentions.swift"; sourceTree = "<group>"; };
 		D81114902BC2E10B000049B2 /* ARMeshGeometry-Extentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARMeshGeometry-Extentions.swift"; sourceTree = "<group>"; };
 		D81114922BC2E49B000049B2 /* WaveSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveSettingsView.swift; sourceTree = "<group>"; };
+		D8B4E4332BC9AAEF006D72DA /* cell_noise_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cell_noise_1.png; sourceTree = "<group>"; };
 		D8CAF17A2BC076F100D8A233 /* WaveSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveSystem.swift; sourceTree = "<group>"; };
 		D8CAF17C2BC0775E00D8A233 /* WaveComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveComponent.swift; sourceTree = "<group>"; };
 		D8CAF17E2BC1AB0400D8A233 /* ARGeometry-Extentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARGeometry-Extentions.swift"; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 		6643974D261BC8B1007A3130 /* OceanFloor */ = {
 			isa = PBXGroup;
 			children = (
+				D8B4E4332BC9AAEF006D72DA /* cell_noise_1.png */,
 				6643974E261BC8B1007A3130 /* AppDelegate.swift */,
 				66439750261BC8B1007A3130 /* ContentView.swift */,
 				16B38CAB2649EABD004A705B /* Settings.bundle */,
@@ -190,6 +193,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8B4E4342BC9AAEF006D72DA /* cell_noise_1.png in Resources */,
 				66439758261BC8B2007A3130 /* Preview Assets.xcassets in Resources */,
 				16B38CAC2649EABD004A705B /* Settings.bundle in Resources */,
 				66439755261BC8B2007A3130 /* Assets.xcassets in Resources */,
@@ -356,7 +360,7 @@
 				COMPILER_INDEX_STORE_ENABLE = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"OceanFloor/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 73A3FF4Z45;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -394,7 +398,7 @@
 				COMPILER_INDEX_STORE_ENABLE = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"OceanFloor/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 73A3FF4Z45;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
