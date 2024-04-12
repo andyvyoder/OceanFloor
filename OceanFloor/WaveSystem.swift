@@ -25,8 +25,23 @@ class WaveSystem: RealityKit.System {
         in: MetalLibLoader.library
     )
     
+    
+    private static let waveTexture = try? CustomMaterial.Texture(TextureResource.load(named: "cell_noise_1"))
+    
     // This will be the final material to be used on wave models, combining the base material with the modifiers
-    private var waveMaterial: CustomMaterial? = try? CustomMaterial(from: baseWaveMaterial, surfaceShader: waveSurfaceShader, geometryModifier: waveGeometryModifier)
+    private var waveMaterial: CustomMaterial? = {
+        guard var mat = try? CustomMaterial(from: baseWaveMaterial, surfaceShader: waveSurfaceShader, geometryModifier: waveGeometryModifier) else {
+            return nil
+        }
+        
+        guard let waveTexture = waveTexture else {
+            print("Failed to load texture")
+            return nil;
+        }
+        
+        mat.custom.texture = .init(waveTexture)
+        return mat
+    }()
     
     
     // These are the values that are currently applied as custom parameters to our wave material
@@ -114,8 +129,12 @@ class WaveSystem: RealityKit.System {
     
     // Making this fileprivate so that WaveMeshProcessingTracker can call it.
     fileprivate func pushCustomMaterialParams(entity: Entity) {
+        guard let waveTexture = Self.waveTexture else {
+            return
+        }
+        
         let (red, green, blue) = self.currentWaveColor.getRGB()
-        entity.setCustomVector(vector: SIMD4<Float>(x: red, y: green, z: blue, w: self.currentWaveHeightScale))
+        entity.setCustomVectorAndTexture(vector: SIMD4<Float>(x: red, y: green, z: blue, w: self.currentWaveHeightScale), texture: waveTexture)
     }
 }
 

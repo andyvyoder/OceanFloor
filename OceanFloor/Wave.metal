@@ -32,6 +32,8 @@ void waveGeometryModifier(realitykit::geometry_parameters params)
     params.geometry().set_model_position_offset(offset);
 }
 
+constexpr sampler textureSampler(coord::normalized, address::repeat, filter::linear);
+
 
 [[visible]]
 void waveSurfaceShader(realitykit::surface_parameters params)
@@ -40,8 +42,28 @@ void waveSurfaceShader(realitykit::surface_parameters params)
     float waveGreen = params.uniforms().custom_parameter()[1];
     float waveBlue = params.uniforms().custom_parameter()[2];
     
-    float3 customColor = float3(waveRed, waveGreen, waveBlue);
+    half3 customColor = half3(waveRed, waveGreen, waveBlue);
     
-    params.surface().set_base_color(half3(customColor));
+    metal::texture2d<half> texture = params.textures().custom();
+    
+    // use the x/z world position as the u/v indices for the texture to get a consistent
+    // texture mapping across the multiple meshes
+    float x = params.geometry().world_position()[0];
+    float z = params.geometry().world_position()[2];
+    
+    const float textureScaleFactor = 0.5;
+    float u = x * textureScaleFactor;
+    float v = z * textureScaleFactor;
+    
+    float2 uv = float2(u,v);
+    half4 textureColor = texture.sample(textureSampler, uv);
+    half3 textureRgb = half3(textureColor[0], textureColor[1], textureColor[2]);
+    
+    // Blend the texture color with the custom color
+    float blendFactor = 0.5;
+    half3 blendedColor = mix(customColor, textureRgb, blendFactor);
+    
+    
+    params.surface().set_base_color(blendedColor);
 }
 
